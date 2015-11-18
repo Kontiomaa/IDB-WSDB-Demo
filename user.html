@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>User</title>
+		<meta name="author" content="Samuel Kontiomaa">
+		<link href="css/style.css" rel="stylesheet" type="text/css">
+		<script src="db/idb.js"></script>
+		<!--<script src="db/wsdb.js"></script>-->
+	</head>
+	<body>
+		<header>
+			<h1>User</h1>
+		</header>
+		<main>
+			<nav>
+				<a href="index.html">Front page</a>
+				<br />
+				<div>
+					<p>Users</p>
+					<ul>
+						<li><a href="addUser.html">New</a></li>
+						<li><a href="listUsers.html">Browse</a></li>
+						<li><a href="searchUsers.html">Search</a></li>
+						<li><a href="borrowBooks.html">Borrow books</a></li>
+					</ul>
+				</div>
+				<div>
+					<p>Books</p>
+					<ul>
+						<li><a href="addBook.html">New</a></li>
+						<li><a href="listBooks.html">Browse</a></li>
+						<li><a href="searchBooks.html">Search</a></li>
+					</ul>
+				</div>
+			</nav>
+			<br />
+			<section>
+				<p id="userData">User data here...</p>
+				<div id="userBorrowedBooks"></div>
+			</section>
+		</main>
+		<script>
+			document.addEventListener("DOMContentLoaded", function(){
+				getUserById();
+			});
+		</script>
+	</body>
+</html>

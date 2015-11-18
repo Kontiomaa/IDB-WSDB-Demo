@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Library demo</title>
+		<meta name="author" content="Samuel Kontiomaa">
+		<link href="css/style.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<header>
+			<h1>Library demo</h1>
+		</header>
+		<main>
+			<nav>
+				<div>
+					<p>Users</p>
+					<ul>
+						<li><a href="addUser.html">New</a></li>
+						<li><a href="listUsers.html">Browse</a></li>
+						<li><a href="searchUsers.html">Search</a></li>
+						<li><a href="borrowBooks.html">Borrow books</a></li>
+					</ul>
+				</div>
+				<div>
+					<p>Books</p>
+					<ul>
+						<li><a href="addBook.html">New</a></li>
+						<li><a href="listBooks.html">Browse</a></li>
+						<li><a href="searchBooks.html">Search</a></li>
+					</ul>
+				</div>
+			</nav>
+			<section>
+				<h3>Indexed Database and Web SQL Database - Library Demo.</h3>
+				<p>You can do the following:</p>
+				<ol>
+					<li>Add an user and a book from their respective buttons</li>
+					<li>Browse users and books and access their "profile"</li>
+						<ul>
+							<li>Modify User and Book data in their respective profiles</li>
+							<li>Delete User and Book from database in their respective profiles</li>
+						</ul>
+					<li>Search Users and Books by name or library card/isbn</li>
+					<li>Lend books to users</li>
+						<ul>
+							<li>Books can be returned from the users' profile page</li>
+						</ul>
+				</ol>
+				<p>Please note:</p>
+				<ul>
+					<li>Web SQL Database isn't supported (doesn't work) on Mozilla Firefox (This "app" was tested on Google Chrome)</li>
+					<li>Indexed Database version of this "app" was Tested on Mozilla Firefox and Google Chrome</li>
+					<li>To swap between Indexed Database and Web SQL Database, un-comment the wanted database js file and comment the other one from every page except for the index (Default IDB).</li>
+				</ul>
+			</section>
+		</main>
+	</body>
+</html>

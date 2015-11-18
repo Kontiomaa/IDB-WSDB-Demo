@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>New User</title>
+		<meta name="author" content="Samuel Kontiomaa">
+		<link href="css/style.css" rel="stylesheet" type="text/css">
+		<script src="db/idb.js"></script>
+		<!--<script src="db/wsdb.js"></script>-->
+	</head>
+	<body>
+		<header>
+			<h1>New User</h1>
+		</header>
+		<main>
+			<nav>
+				<a href="index.html">Front page</a>
+				<br />
+				<div>
+					<p>Users</p>
+					<ul>
+						<li><a href="#">New</a></li>
+						<li><a href="listUsers.html">Browse</a></li>
+						<li><a href="searchUsers.html">Search</a></li>
+						<li><a href="borrowBooks.html">Borrow books</a></li>
+					</ul>
+				</div>
+				<div>
+					<p>Books</p>
+					<ul>
+						<li><a href="addBook.html">New</a></li>
+						<li><a href="listBooks.html">Browse</a></li>
+						<li><a href="searchBooks.html">Search</a></li>
+					</ul>
+				</div>
+			</nav>
+			<section>
+				<div id="newUserStatus"></div>
+				<br>
+					Firstname: <input id="fNameField" type="text" /><br/>
+					Lastname: <input id="lNameField" type="text" /><br />
+					Address: <input id="addressField" type="text" /><br />
+					Email: <input id="emailField" type="text" /><br />
+					Card id: <input id="cardField" type="text" /><br />
+				<input type="button" value="Save" onclick="newUser()" />
+			</section>
+		</main>
+	</body>
+</html>

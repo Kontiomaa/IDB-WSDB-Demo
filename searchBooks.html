@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Search books</title>
+		<meta name="author" content="Samuel Kontiomaa">
+		<link href="css/style.css" rel="stylesheet" type="text/css">
+		<script src="db/idb.js"></script>
+		<!--<script src="db/wsdb.js"></script>-->
+	</head>
+	<body>
+		<header>
+			<h1>Search books</h1>
+		</header>
+		<main>
+			<nav>
+				<a href="index.html">Front page</a>
+				<br />
+				<div>
+					<p>Users</p>
+					<ul>
+						<li><a href="addUser.html">New</a></li>
+						<li><a href="listUsers.html">Browse</a></li>
+						<li><a href="searchUsers.html">Search</a></li>
+						<li><a href="borrowBooks.html">Borrow books</a></li>
+					</ul>
+				</div>
+				<div>
+					<p>Books</p>
+					<ul>
+						<li><a href="addBook.html">New</a></li>
+						<li><a href="listBooks.html">Browse</a></li>
+						<li><a href="#">Search</a></li>
+					</ul>
+				</div>
+			</nav>
+			<br />
+			<section>
+				<input id="isbnSearchValue" type="text" />
+				<input type="button" value="ISBN search" onclick="getBookByIsbn()" />
+				<br /><br />
+				<input id="nameSearchValue" type="text" />
+				<input type="button" value="Name Search" onclick="getBookByName()" />
+				<hr>
+				<div id="searchResult"></div>
+			</section>
+		</main>
+	</body>
+</html>
