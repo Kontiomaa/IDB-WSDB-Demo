@@ -39,97 +39,197 @@ function connect(callback){
 	}
 }
 
-function newUser(){
-	var fName=document.getElementById("fNameField").value;
-	var lName=document.getElementById("lNameField").value;
-	var address=document.getElementById("addressField").value;
-	var email=document.getElementById("emailField").value;
-	var libraryCard=document.getElementById("cardField").value;
-	if(fName&&lName&&address&&email&&libraryCard){
-		console.log(fName+" "+lName+", "+address+", "+email+", "+libraryCard);
-		connect(function(){
-			if(this){
-				var user={firstname:fName, lastname:lName, address:address, email:email, card:libraryCard}
-				var transaction=this.transaction(["libraryusers"],"readwrite");
-				var objstore=transaction.objectStore("libraryusers");
-				var query=objstore.add(user);
-				transaction.oncomplete=function(){
-					console.log("User saved");
-					document.getElementById("fNameField").value="";
-					document.getElementById("lNameField").value="";
-					document.getElementById("addressField").value="";
-					document.getElementById("emailField").value="";
-					document.getElementById("cardField").value="";
-					document.getElementById("newUserStatus").innerHTML="<b>Saved</b>";
-				}
-				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
-				}
-				query.onsuccess=function(){
-					console.log("Saving user");
-				}
-			} else{
-				console.log("DB didn't load");
+function newUser(test){
+	if(test=='test'){
+		var t0,t1;
+		console.log("Fill test for users");
+		//http://stackoverflow.com/a/27176742
+		var request=new XMLHttpRequest();
+		request.open('GET', 'json/users.json', true);
+		request.onload=function(){
+			if(request.status>=200&&request.status<400){
+				var jsonFile=JSON.parse(request.responseText);
+				//console.dir(jsonFile);
+				connect(function(){
+					if(this){
+						t0=performance.now();
+						var transaction=this.transaction(["libraryusers"],"readwrite");
+						var objstore=transaction.objectStore("libraryusers");
+						var query;
+						transaction.oncomplete=function(){
+							t1=performance.now();
+							console.log("Users saved");
+							console.log("Took:");
+							console.log(t1-t0);
+							document.getElementById("userCreateTestStatus").innerHTML="<b>Saved multiple users</b> Time: "+(t1-t0)+" ms.";
+						}
+						for(var i=0;i<jsonFile.users.length;i++){
+							query=objstore.add(jsonFile.users[i]);
+							query.onerror=function(err){
+								console.log("Error: ", err.target.error.name);
+							}
+							query.onsuccess=function(){
+								//console.log("Saving user "+i);
+							}
+						}
+					} else{
+						console.log("DB didn't load");
+					}
+				});
+			}else{
+				// We reached our target server, but it returned an error
 			}
-		});
+		};
+		request.onerror = function() {
+		  // There was a connection error of some sort
+		};
+		request.send();
 	}else{
-		console.log("Some fields are missing");
-		document.getElementById("newUserStatus").innerHTML="<b>Some fields are missing</b>";
+		var fName=document.getElementById("fNameField").value;
+		var lName=document.getElementById("lNameField").value;
+		var address=document.getElementById("addressField").value;
+		var email=document.getElementById("emailField").value;
+		var libraryCard=document.getElementById("cardField").value;
+		
+		if(fName&&lName&&address&&email&&libraryCard){
+			console.log(fName+" "+lName+", "+address+", "+email+", "+libraryCard);
+			connect(function(){
+				if(this){
+					var user={firstname:fName, lastname:lName, address:address, email:email, card:libraryCard}
+					var transaction=this.transaction(["libraryusers"],"readwrite");
+					var objstore=transaction.objectStore("libraryusers");
+					var query=objstore.add(user);
+					transaction.oncomplete=function(){
+						console.log("User saved");
+						document.getElementById("fNameField").value="";
+						document.getElementById("lNameField").value="";
+						document.getElementById("addressField").value="";
+						document.getElementById("emailField").value="";
+						document.getElementById("cardField").value="";
+						document.getElementById("newUserStatus").innerHTML="<b>Saved</b>";
+					}
+					query.onerror=function(err){
+						console.log("Error: ", err.target.error.name);
+					}
+					query.onsuccess=function(){
+						console.log("Saving user");
+					}
+				} else{
+					console.log("DB didn't load");
+				}
+			});
+		}else{
+			console.log("Some fields are missing");
+			document.getElementById("newUserStatus").innerHTML="<b>Some fields are missing</b>";
+		}
 	}
 }
-function newBook(){
-	var name=document.getElementById("nameField").value;
-	var author=document.getElementById("authorField").value;
-	var genre=document.getElementById("genreField").value;
-	var isbn=document.getElementById("isbnField").value;
-	if(name&&author&&genre&&isbn){
-		console.log(name+" "+author+", "+genre+", "+isbn);
-		connect(function(){
-			if(this){
-				var book={name:name, author:author, genre:genre, isbn:isbn}
-				var transaction=this.transaction(["librarybooks"],"readwrite");
-				var objstore=transaction.objectStore("librarybooks");
-				var query=objstore.add(book);
-				transaction.oncomplete=function(){
-					console.log("Book saved");
-					document.getElementById("nameField").value="";
-					document.getElementById("authorField").value="";
-					document.getElementById("genreField").value="";
-					document.getElementById("isbnField").value="";
-					document.getElementById("newBookStatus").innerHTML="<b>Saved</b>";
-				}
-				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
-				}
-				query.onsuccess=function(){
-					console.log("Saving book");
-				}
-			} else{
-				console.log("DB didn't load");
+function newBook(test){
+	if(test=='test'){
+		var t0,t1;
+		console.log("Fill test for books");
+		//http://stackoverflow.com/a/27176742
+		var request=new XMLHttpRequest();
+		request.open('GET', 'json/books.json', true);
+		request.onload=function(){
+			if(request.status>=200&&request.status<400){
+				var jsonFile=JSON.parse(request.responseText);
+				//console.dir(jsonFile);
+				connect(function(){
+					if(this){
+						t0=performance.now();
+						var transaction=this.transaction(["librarybooks"],"readwrite");
+						var objstore=transaction.objectStore("librarybooks");
+						var query;
+						transaction.oncomplete=function(){
+							t1=performance.now();
+							console.log("Books saved");
+							console.log("Took:");
+							console.log(t1-t0);
+							document.getElementById("bookCreateTestStatus").innerHTML="<b>Saved multiple books</b> Time: "+(t1-t0)+" ms.";
+						}
+						for(var i=0;i<jsonFile.books.length;i++){
+							query=objstore.add(jsonFile.books[i]);
+							query.onerror=function(err){
+								console.log("Error: ", err.target.error.name);
+							}
+							query.onsuccess=function(){
+								//console.log("Saving book "+i);
+							}
+						}
+					} else{
+						console.log("DB didn't load");
+					}
+				});
+			}else{
+				// We reached our target server, but it returned an error
 			}
-		});
-	}
-	else{
-		console.log("Some fields are missing");
-		document.getElementById("newBookStatus").innerHTML="<b>Some fields are missing</b>";
+		};
+		request.onerror = function() {
+			// There was a connection error of some sort
+		};
+		request.send();
+	}else{
+		var name=document.getElementById("nameField").value;
+		var author=document.getElementById("authorField").value;
+		var genre=document.getElementById("genreField").value;
+		var isbn=document.getElementById("isbnField").value;
+		if(name&&author&&genre&&isbn){
+			console.log(name+" "+author+", "+genre+", "+isbn);
+			connect(function(){
+				if(this){
+					var book={name:name, author:author, genre:genre, isbn:isbn}
+					var transaction=this.transaction(["librarybooks"],"readwrite");
+					var objstore=transaction.objectStore("librarybooks");
+					var query=objstore.add(book);
+					transaction.oncomplete=function(){
+						console.log("Book saved");
+						document.getElementById("nameField").value="";
+						document.getElementById("authorField").value="";
+						document.getElementById("genreField").value="";
+						document.getElementById("isbnField").value="";
+						document.getElementById("newBookStatus").innerHTML="<b>Saved</b>";
+					}
+					query.onerror=function(err){
+						console.log("Error: ", err.target.error.name);
+					}
+					query.onsuccess=function(){
+						console.log("Saving book");
+					}
+				} else{
+					console.log("DB didn't load");
+				}
+			});
+		}else{
+			console.log("Some fields are missing");
+			document.getElementById("newBookStatus").innerHTML="<b>Some fields are missing</b>";
+		}
 	}
 }
-function getUserList(){
+function getUserList(test){
 	connect(function(){
 		if(this){
+			var t0=performance.now();
 			var result="";
 			var count=0;
 			var transaction=this.transaction(["libraryusers"],"readonly");
 			var query=transaction.objectStore("libraryusers").openCursor();
 			transaction.oncomplete=function(){
+				var t1=performance.now();
 				console.log("User list done!");
-				document.getElementById("userList").innerHTML=result;
+				console.log("Took:");
+				console.log(t1-t0);
+				if(test=='test'){
+					document.getElementById("userReadTestStatus").innerHTML="<p>User list loaded in: "+(t1-t0)+" ms.</p>";
+				}else{
+					document.getElementById("userList").innerHTML=result;
+				}
 			}
 			query.onsuccess=function(res){
 				var cursor=res.target.result;
 				if(cursor){
 					count++;
-					console.log(cursor.value);
+					//console.log(cursor.value);
 					result+=count+". <a href='user.html?key="+cursor.key+"'>"+cursor.value.firstname+" "+cursor.value.lastname+"</a><br />";
 					cursor.continue();
 				}
@@ -139,22 +239,30 @@ function getUserList(){
 		}
 	});
 }
-function getBookList(){
+function getBookList(test){
 	connect(function(){
 		if(this){
+			var t0=performance.now();
 			var result="";
 			var count=0;
 			var transaction=this.transaction(["librarybooks"],"readonly");
 			var query=transaction.objectStore("librarybooks").openCursor();
 			transaction.oncomplete=function(){
+				var t1=performance.now();
 				console.log("Book list done!");
-				document.getElementById("bookList").innerHTML=result;
+				console.log("Took:");
+				console.log(t1-t0);
+				if(test=='test'){
+					document.getElementById("bookReadTestStatus").innerHTML="<p>Book list loaded in: "+(t1-t0)+" ms.</p>";
+				}else{
+					document.getElementById("bookList").innerHTML=result;
+				}
 			}
 			query.onsuccess=function(res){
 				var cursor=res.target.result;
 				if(cursor){
 					count++;
-					console.log(cursor.value);
+					//console.log(cursor.value);
 					result+=count+". <a href='book.html?key="+cursor.key+"'>"+cursor.value.name+"</a><br />";
 					cursor.continue();
 				}
@@ -372,7 +480,7 @@ function getUserById(){
 									transaction.oncomplete=function(){
 										var returnValue2="";
 										for(var i=0;i<result2.length;i++){
-											console.dir(result2[i]);
+											//console.dir(result2[i]);
 											returnValue2+="<input type='checkbox' name='borrowedBooks' value='"+result.books[i]+"' /> "+result2[i].name+"<br />";
 										}
 										if(returnValue2){
@@ -382,7 +490,7 @@ function getUserById(){
 									for(var i=0;i<result.books.length;i++){
 										query=objstore.get(Number(result.books[i]));
 										query.onerror=function(err){
-											console.log("Error", err.target.error.name);
+											console.log("Error: ", err.target.error.name);
 										}
 										query.onsuccess=function(res){
 											result2.push(res.target.result);
@@ -452,7 +560,7 @@ function removeUserById(id){
 					window.location.replace("listUsers.html");
 				}
 				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
+					console.log("Error: ", err.target.error.name);
 				}
 				query.onsuccess=function(){
 					console.log("Deleting user");
@@ -476,7 +584,7 @@ function removeBookById(id){
 					window.location.replace("listBooks.html");
 				}
 				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
+					console.log("Error: ", err.target.error.name);
 				}
 				query.onsuccess=function(){
 					console.log("Deleting Book");
@@ -509,7 +617,7 @@ function modifyUserById(id){
 					document.getElementById("userEditStatus").innerHTML="<b>User modified</b>";
 				}
 				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
+					console.log("Error: ", err.target.error.name);
 					document.getElementById("userEditStatus").innerHTML="<b>There was an error...</b>";
 				}
 				query.onsuccess=function(){
@@ -546,7 +654,7 @@ function modifyBookById(id){
 					document.getElementById("bookEditStatus").innerHTML="<b>Book modified</b>";
 				}
 				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
+					console.log("Error: ", err.target.error.name);
 					document.getElementById("bookEditStatus").innerHTML="<b>There was an error...</b>";
 				}
 				query.onsuccess=function(){
@@ -578,7 +686,7 @@ function getUsersAndBooks(){
 			query1.onsuccess=function(res){
 				var cursor1=res.target.result;
 				if(cursor1){
-					console.log(cursor1.value);
+					//console.log(cursor1.value);
 					result1+="<input type='radio' name='user' value='"+cursor1.key+"' />"+cursor1.value.firstname+" "+cursor1.value.lastname+"<br />";
 					cursor1.continue();
 				}
@@ -590,7 +698,7 @@ function getUsersAndBooks(){
 			query2.onsuccess=function(res){
 				var cursor2=res.target.result;
 				if(cursor2){
-					console.log(cursor2.value);
+					//console.log(cursor2.value);
 					result2+="<input type='checkbox' name='books' value='"+cursor2.key+"' />"+cursor2.value.name+"<br />";
 					cursor2.continue();
 				}
@@ -650,7 +758,7 @@ function borrowBooks(){
 									document.getElementById("borrowStatus").innerHTML="Books loaned";
 								}
 								query.onerror=function(err){
-									console.log("Error", err.target.error.name);
+									console.log("Error: ", err.target.error.name);
 								}
 								query.onsuccess=function(){
 									console.log("Adding books to user");
@@ -659,7 +767,7 @@ function borrowBooks(){
 						});
 					}
 					query.onerror=function(err){
-						console.log("Error", err.target.error.name);
+						console.log("Error: ", err.target.error.name);
 					}
 					query.onsuccess=function(res){
 						result=res.target.result;
@@ -706,7 +814,7 @@ function returnBooks(id){
 								location.reload();
 							}
 							query.onerror=function(err){
-								console.log("Error", err.target.error.name);
+								console.log("Error: ", err.target.error.name);
 							}
 							query.onsuccess=function(){
 								console.log("Returning books");
@@ -715,7 +823,7 @@ function returnBooks(id){
 					});
 				}
 				query.onerror=function(err){
-					console.log("Error", err.target.error.name);
+					console.log("Error: ", err.target.error.name);
 				}
 				query.onsuccess=function(res){
 					result=res.target.result;
@@ -726,6 +834,18 @@ function returnBooks(id){
 			}
 		});
 	}
+}
+function updateUsers(){
+	console.log("Update users");
+}
+function updateBooks(){
+	console.log("Update books");
+}
+function deleteUsers(){
+	console.log("Delete users");
+}
+function deleteBooks(){
+	console.log("Delete books");
 }
 
 //Observations:

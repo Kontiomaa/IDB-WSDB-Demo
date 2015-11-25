@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Performance tests</title>
+		<meta name="author" content="Samuel Kontiomaa">
+		<link href="css/style.css" rel="stylesheet" type="text/css">
+		<script src="db/idb.js"></script>
+		<!--<script src="db/wsdb.js"></script>-->
+	</head>
+	<body>
+		<header>
+			<h1>Performance Tests</h1>
+		</header>
+		<main>
+			<nav>
+				<a href="index.html">Front page</a>
+				<br />
+				<a href="#">Tests</a>
+				<br />
+				<div>
+					<p>Users</p>
+					<ul>
+						<li><a href="addUser.html">New</a></li>
+						<li><a href="listUsers.html">Browse</a></li>
+						<li><a href="searchUsers.html">Search</a></li>
+						<li><a href="borrowBooks.html">Borrow books</a></li>
+					</ul>
+				</div>
+				<div>
+					<p>Books</p>
+					<ul>
+						<li><a href="addBook.html">New</a></li>
+						<li><a href="listBooks.html">Browse</a></li>
+						<li><a href="searchBooks.html">Search</a></li>
+					</ul>
+				</div>
+			</nav>
+			<br /><br />
+			<section>
+				<p>Performance testing for CRUD Operations:</p>
+				<input type="button" value="Create Users" onclick="newUser('test')" /><div id="userCreateTestStatus"></div>
+				<input type="button" value="Create Books" onclick="newBook('test')" /><div id="bookCreateTestStatus"></div>
+				<hr />
+				<input type="button" value="Read Users" onclick="getUserList('test')" /><div id="userReadTestStatus"></div>
+				<input type="button" value="Read Books" onclick="getBookList('test')" /><div id="bookReadTestStatus"></div>
+				<hr />
+				<input type="button" value="Update Users" onclick="updateUsers()" /><div id="userUpdateTestStatus"></div>
+				<input type="button" value="Update Books" onclick="updateBooks()" /><div id="bookUpdateTestStatus"></div>
+				<hr/>
+				<input type="button" value="Delete Users" onclick="deleteUsers()" /><div id="userDeleteTestStatus"></div>
+				<input type="button" value="Delete Books" onclick="deleteBooks()" /><div id="bookDeleteTestStatus"></div>
+			</section>
+		</main>
+	</body>
+</html>
