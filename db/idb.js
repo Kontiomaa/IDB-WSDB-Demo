@@ -469,7 +469,11 @@ function getUserById(){
 				transaction.oncomplete=function(){
 					console.dir(result);
 					if(result){
-						var returnValue="Firstname: <input type='text' id='editFname' value='"+result.firstname+"' /><br />Lastname: <input type='text' id='editLname' value='"+result.lastname+"' /><br/>Address: <input type='text' id='editAddress' value='"+result.address+"' /><br />Email: <input type='text' id='editEmail' value='"+result.email+"' /><br />Card ID: <input type='text' id='cardId' value='"+result.card+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyUserById("+id+")' /><input type='button' value='Delete' onclick='removeUserById("+id+")' /><br /><br /><div id='userEditStatus'></div>";
+						if(result.updated){
+							var returnValue="Firstname: <input type='text' id='editFname' value='"+result.firstname+"' /><br />Lastname: <input type='text' id='editLname' value='"+result.lastname+"' /><br/>Address: <input type='text' id='editAddress' value='"+result.address+"' /><br />Email: <input type='text' id='editEmail' value='"+result.email+"' /><br />Card ID: <input type='text' id='cardId' value='"+result.card+"' disabled /><br />Test updated: "+result.updated+"<br /><br /><input type='button' value='Edit' onclick='modifyUserById("+id+")' /><input type='button' value='Delete' onclick='removeUserById("+id+")' /><br /><br /><div id='userEditStatus'></div>";
+						}else{
+							var returnValue="Firstname: <input type='text' id='editFname' value='"+result.firstname+"' /><br />Lastname: <input type='text' id='editLname' value='"+result.lastname+"' /><br/>Address: <input type='text' id='editAddress' value='"+result.address+"' /><br />Email: <input type='text' id='editEmail' value='"+result.email+"' /><br />Card ID: <input type='text' id='cardId' value='"+result.card+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyUserById("+id+")' /><input type='button' value='Delete' onclick='removeUserById("+id+")' /><br /><br /><div id='userEditStatus'></div>";
+						}
 						document.getElementById("userData").innerHTML=returnValue;
 						if(result.books){
 							console.log("User has borrowed books");
@@ -529,7 +533,11 @@ function getBookById(){
 				transaction.oncomplete=function(){
 					console.dir(result);
 					if(result){
-						var returnValue="Name: <input type='text' id='editName' value='"+result.name+"' /><br/>Author: <input type='text' id='editAuthor' value='"+result.author+"' /><br />Genre: <input type='text' id='editGenre' value='"+result.genre+"' /><br />ISBN: <input type='text' id='isbn' value='"+result.isbn+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyBookById("+id+")' /><input type='button' value='Delete' onclick='removeBookById("+id+")' /><br /><br /><div id='bookEditStatus'></div>";
+						if(result.updated){
+							var returnValue="Name: <input type='text' id='editName' value='"+result.name+"' /><br/>Author: <input type='text' id='editAuthor' value='"+result.author+"' /><br />Genre: <input type='text' id='editGenre' value='"+result.genre+"' /><br />ISBN: <input type='text' id='isbn' value='"+result.isbn+"' disabled /><br />Test updated: "+result.updated+"<br /><br /><input type='button' value='Edit' onclick='modifyBookById("+id+")' /><input type='button' value='Delete' onclick='removeBookById("+id+")' /><br /><br /><div id='bookEditStatus'></div>";
+						}else{
+							var returnValue="Name: <input type='text' id='editName' value='"+result.name+"' /><br/>Author: <input type='text' id='editAuthor' value='"+result.author+"' /><br />Genre: <input type='text' id='editGenre' value='"+result.genre+"' /><br />ISBN: <input type='text' id='isbn' value='"+result.isbn+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyBookById("+id+")' /><input type='button' value='Delete' onclick='removeBookById("+id+")' /><br /><br /><div id='bookEditStatus'></div>";
+						}
 						document.getElementById("bookData").innerHTML=returnValue;
 					}else{
 						document.getElementById("bookData").innerHTML="0 Hits";
@@ -836,16 +844,160 @@ function returnBooks(id){
 	}
 }
 function updateUsers(){
-	console.log("Update users");
+	var t0,t1;
+	connect(function(){
+		if(this){
+			t0=performance.now();
+			var transaction=this.transaction(["libraryusers"],"readonly");
+			var query=transaction.objectStore("libraryusers").openCursor();
+			var user;
+			var userKeys=[];
+			var users=[];
+			transaction.oncomplete=function(){
+				if(users[0]!=null&&userKeys[0]!=null&&users.length==userKeys.length){
+					//console.dir(users);
+					connect(function(){
+						if(this){
+							transaction=this.transaction(["libraryusers"],"readwrite");
+							objstore=transaction.objectStore("libraryusers");
+							transaction.oncomplete=function(){
+								t1=performance.now();
+								console.log(t1-t0);
+								document.getElementById('userUpdateTestStatus').innerHTML="Users updated in "+(t1-t0)+" ms.";
+							}
+							for(var i=0;i<users.length;i++){
+								query=objstore.put(users[i], Number(userKeys[i]));
+								query.onerror=function(err){
+									console.log("Error: ", err.target.error.name);
+								}
+								query.onsuccess=function(){
+									//console.log("Updating users");
+								}
+							}
+						}
+					});
+				}
+			}
+			query.onerror=function(err){
+				console.log("Error: ", err.target.error.name);
+			}
+			query.onsuccess=function(res){
+				var cursor=res.target.result;
+				if(cursor){
+					if(cursor.value.books){
+						user={firstname:cursor.value.firstname, lastname:cursor.value.lastname, address:cursor.value.address, email:cursor.value.email, card:cursor.value.card, books:cursor.value.books, updated:1}
+					}else{
+						user={firstname:cursor.value.firstname, lastname:cursor.value.lastname, address:cursor.value.address, email:cursor.value.email, card:cursor.value.card, updated:1}
+					}
+					userKeys.push(cursor.key);
+					users.push(user);
+					cursor.continue();
+				}
+			}
+		} else{
+			console.log("DB didn't load");
+		}
+	});
 }
 function updateBooks(){
-	console.log("Update books");
+	var t0,t1;
+	connect(function(){
+		if(this){
+			t0=performance.now();
+			var transaction=this.transaction(["librarybooks"],"readonly");
+			var query=transaction.objectStore("librarybooks").openCursor();
+			var book;
+			var bookKeys=[];
+			var books=[];
+			transaction.oncomplete=function(){
+				if(books[0]!=null&&bookKeys[0]!=null&&books.length==bookKeys.length){
+					//console.dir(books);
+					connect(function(){
+						if(this){
+							transaction=this.transaction(["librarybooks"],"readwrite");
+							objstore=transaction.objectStore("librarybooks");
+							transaction.oncomplete=function(){
+								t1=performance.now();
+								console.log(t1-t0);
+								document.getElementById('bookUpdateTestStatus').innerHTML="Books updated in "+(t1-t0)+" ms.";
+							}
+							for(var i=0;i<books.length;i++){
+								query=objstore.put(books[i], Number(bookKeys[i]));
+								query.onerror=function(err){
+									console.log("Error: ", err.target.error.name);
+								}
+								query.onsuccess=function(){
+									//console.log("Updating books");
+								}
+							}
+						}
+					});
+				}
+			}
+			query.onerror=function(err){
+				console.log("Error: ", err.target.error.name);
+			}
+			query.onsuccess=function(res){
+				var cursor=res.target.result;
+				if(cursor){
+					book={name:cursor.value.name, author:cursor.value.author, genre:cursor.value.genre, isbn:cursor.value.isbn, updated:1}
+					bookKeys.push(cursor.key);
+					books.push(book);
+					cursor.continue();
+				}
+			}
+		} else{
+			console.log("DB didn't load");
+		}
+	});
 }
 function deleteUsers(){
-	console.log("Delete users");
+	connect(function(){
+		if(this){
+			var t0=performance.now();
+			var transaction=this.transaction(["libraryusers"],"readwrite");
+			var objstore=transaction.objectStore("libraryusers");
+			var query=objstore.clear();
+			transaction.oncomplete=function(){
+				var t1=performance.now();
+				console.log("All users deleted");
+				console.log(t1-t0);
+				document.getElementById('userDeleteTestStatus').innerHTML="Users deleted in "+(t1-t0)+" ms.";
+			}
+			query.onerror=function(err){
+				console.log("Error: ", err.target.error.name);
+			}
+			query.onsuccess=function(){
+				console.log("Deleting users");
+			}
+		} else{
+			console.log("DB didn't load");
+		}
+	});
 }
 function deleteBooks(){
-	console.log("Delete books");
+	connect(function(){
+		if(this){
+			var t0=performance.now();
+			var transaction=this.transaction(["librarybooks"],"readwrite");
+			var objstore=transaction.objectStore("librarybooks");
+			var query=objstore.clear();
+			transaction.oncomplete=function(){
+				var t1=performance.now();
+				console.log("All books deleted");
+				console.log(t1-t0);
+				document.getElementById('bookDeleteTestStatus').innerHTML="Books deleted in "+(t1-t0)+" ms.";
+			}
+			query.onerror=function(err){
+				console.log("Error: ", err.target.error.name);
+			}
+			query.onsuccess=function(){
+				console.log("Deleting books");
+			}
+		} else{
+			console.log("DB didn't load");
+		}
+	});
 }
 
 //Observations:
