@@ -61,7 +61,7 @@ function newUser(test){
 							console.log("Users saved");
 							console.log("Took:");
 							console.log(t1-t0);
-							document.getElementById("userCreateTestStatus").innerHTML="<b>Saved multiple users</b> Time: "+(t1-t0)+" ms.";
+							document.getElementById("userCreateTestStatus").innerHTML="Saved multiple users. Time: "+(t1-t0)+" ms.";
 						}
 						for(var i=0;i<jsonFile.users.length;i++){
 							query=objstore.add(jsonFile.users[i]);
@@ -146,7 +146,7 @@ function newBook(test){
 							console.log("Books saved");
 							console.log("Took:");
 							console.log(t1-t0);
-							document.getElementById("bookCreateTestStatus").innerHTML="<b>Saved multiple books</b> Time: "+(t1-t0)+" ms.";
+							document.getElementById("bookCreateTestStatus").innerHTML="Saved multiple books. Time: "+(t1-t0)+" ms.";
 						}
 						for(var i=0;i<jsonFile.books.length;i++){
 							query=objstore.add(jsonFile.books[i]);
@@ -220,7 +220,7 @@ function getUserList(test){
 				console.log("Took:");
 				console.log(t1-t0);
 				if(test=='test'){
-					document.getElementById("userReadTestStatus").innerHTML="<p>User list loaded in: "+(t1-t0)+" ms.</p>";
+					document.getElementById("userReadTestStatus").innerHTML="User list loaded in: "+(t1-t0)+" ms.";
 				}else{
 					document.getElementById("userList").innerHTML=result;
 				}
@@ -253,7 +253,7 @@ function getBookList(test){
 				console.log("Took:");
 				console.log(t1-t0);
 				if(test=='test'){
-					document.getElementById("bookReadTestStatus").innerHTML="<p>Book list loaded in: "+(t1-t0)+" ms.</p>";
+					document.getElementById("bookReadTestStatus").innerHTML="Book list loaded in: "+(t1-t0)+" ms.";
 				}else{
 					document.getElementById("bookList").innerHTML=result;
 				}
@@ -894,7 +894,36 @@ function updateUsers(){
 					cursor.continue();
 				}
 			}
-		} else{
+		}else{
+			console.log("DB didn't load");
+		}
+	});
+}
+function updateUsersCursor(){//Seems slower than above method...
+	var t0,t1;
+	connect(function(){
+		if(this){
+			t0=performance.now();
+			var transaction=this.transaction(["libraryusers"],"readwrite");
+			var query=transaction.objectStore("libraryusers").openCursor();
+			
+			transaction.oncomplete=function(){
+				t1=performance.now();
+				console.log(t1-t0);
+				document.getElementById('userUpdateTestStatus').innerHTML="Users updated in "+(t1-t0)+" ms.";
+			}
+			query.onerror=function(err){
+				console.log("Error: ", err.target.error.name);
+			}
+			query.onsuccess=function(res){
+				var cursor=res.target.result;
+				if(cursor){
+					cursor.value.updated=2;
+					cursor.update(cursor.value);
+					cursor.continue();
+				}
+			}
+		}else{
 			console.log("DB didn't load");
 		}
 	});
@@ -947,6 +976,35 @@ function updateBooks(){
 				}
 			}
 		} else{
+			console.log("DB didn't load");
+		}
+	});
+}
+function updateBooksCursor(){//Seems slower than above method...
+	var t0,t1;
+	connect(function(){
+		if(this){
+			t0=performance.now();
+			var transaction=this.transaction(["librarybooks"],"readwrite");
+			var query=transaction.objectStore("librarybooks").openCursor();
+			
+			transaction.oncomplete=function(){
+				t1=performance.now();
+				console.log(t1-t0);
+				document.getElementById('bookUpdateTestStatus').innerHTML="Books updated in "+(t1-t0)+" ms.";
+			}
+			query.onerror=function(err){
+				console.log("Error: ", err.target.error.name);
+			}
+			query.onsuccess=function(res){
+				var cursor=res.target.result;
+				if(cursor){
+					cursor.value.updated=2;
+					cursor.update(cursor.value);
+					cursor.continue();
+				}
+			}
+		}else{
 			console.log("DB didn't load");
 		}
 	});

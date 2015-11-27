@@ -1,99 +1,193 @@
 function connect(callback){
 	if(window.openDatabase){
-		var db=openDatabase('ld', '1.0', 'Library Demo', 2 * 1024 * 1024);
+		var db=openDatabase('ld', '1.0', 'Library Demo', 5*1024*1024);
 		console.log("Opened database");
 		db.transaction(function (tx) {  
-		   tx.executeSql('CREATE TABLE IF NOT EXISTS users (userid integer not null primary key autoincrement, firstname text not null, lastname text not null, address text not null, email text not null, card text not null unique)');
-		   tx.executeSql('CREATE TABLE IF NOT EXISTS books (bookid integer not null primary key autoincrement, name text not null, author text not null, genre text not null, isbn text not null unique)');
-		   tx.executeSql('CREATE TABLE IF NOT EXISTS userBooks (ubid integer not null primary key autoincrement, user integer not null, book integer not null, foreign key (user) references users (userid), foreign key (book) references books (bookid))');
+		   tx.executeSql('CREATE TABLE IF NOT EXISTS users (userid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, firstname TEXT NOT NULL, lastname TEXT NOT NULL, address TEXT NOT NULL, email TEXT NOT NULL, card TEXT NOT NULL UNIQUE, updated INTEGER NOT NULL DEFAULT 0)');
+		   tx.executeSql('CREATE TABLE IF NOT EXISTS books (bookid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, author TEXT NOT NULL, genre text TEXT NOT NULL, isbn TEXT NOT NULL UNIQUE, updated INTEGER NOT NULL DEFAULT 0)');
+		   tx.executeSql('CREATE TABLE IF NOT EXISTS userBooks (ubid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, book INTEGER NOT NULL, FOREIGN KEY (user) REFERENCES users (userid), FOREIGN KEY (book) REFERENCES books (bookid))');
 		   callback.call(db);
 		});
 	}else{
 		console.log("Web SQL Database not supported");
 	}
 }
-function newUser(){
-	var fName=document.getElementById("fNameField").value;
-	var lName=document.getElementById("lNameField").value;
-	var address=document.getElementById("addressField").value;
-	var email=document.getElementById("emailField").value;
-	var libraryCard=document.getElementById("cardField").value;
-	if(fName&&lName&&address&&email&&libraryCard){
-		console.log(fName+" "+lName+", "+address+", "+email+", "+libraryCard);
-		connect(function(){
-			if(this){
-				this.transaction(function (tx){
-					tx.executeSql(('INSERT INTO users (firstname, lastname, address, email, card) VALUES (?,?,?,?,?)'),
-					[fName, lName, address, email, libraryCard],
-					function(tx, result){
-						if(result){
-							console.log(result);
-							document.getElementById("fNameField").value="";
-							document.getElementById("lNameField").value="";
-							document.getElementById("addressField").value="";
-							document.getElementById("emailField").value="";
-							document.getElementById("cardField").value="";
-							document.getElementById("newUserStatus").innerHTML="<b>Saved</b>";
-						}
-					},
-					function(err){
-						console.log("Database error: "+err);
-					});
+function newUser(test){
+	if(test=='test'){
+		var t0,t1;
+		//http://stackoverflow.com/a/27176742
+		var request=new XMLHttpRequest();
+		request.open('GET', 'json/users.json', true);
+		request.onload=function(){
+			if(request.status>=200&&request.status<400){
+				var jsonFile=JSON.parse(request.responseText);
+				console.dir(jsonFile);
+				connect(function(){
+					if(this){
+						t0=performance.now();
+						this.transaction(function (tx){
+							for(var i=0;i<jsonFile.users.length;i++){//http://stackoverflow.com/a/13739835
+								tx.executeSql(('INSERT INTO users (firstname, lastname, address, email, card) VALUES (?,?,?,?,?)'),
+								[jsonFile.users[i].firstname, jsonFile.users[i].lastname, jsonFile.users[i].address, jsonFile.users[i].email, jsonFile.users[i].card],
+								function(tx, result){
+									if(result){
+										//How to only take the last round?
+										if(i==jsonFile.users.length){
+											t1=performance.now();
+											console.log(t1-t0);
+											document.getElementById("userCreateTestStatus").innerHTML="Saved multiple users. Time: "+(t1-t0)+" ms.";
+										}
+									}
+								},
+								function(err){
+									console.log("Database error: "+err);
+								});
+							}
+						});
+					}
 				});
+			}else{
+				console.log("File didn't load.");
+				// We reached our target server, but it returned an error
 			}
-		});
+		};
+		request.onerror = function() {
+		  // There was a connection error of some sort
+		};
+		request.send();
 	}else{
-		console.log("Some fields are missing");
-		document.getElementById("newUserStatus").innerHTML="<b>Some fields are missing</b>";
+		var fName=document.getElementById("fNameField").value;
+		var lName=document.getElementById("lNameField").value;
+		var address=document.getElementById("addressField").value;
+		var email=document.getElementById("emailField").value;
+		var libraryCard=document.getElementById("cardField").value;
+		if(fName&&lName&&address&&email&&libraryCard){
+			console.log(fName+" "+lName+", "+address+", "+email+", "+libraryCard);
+			connect(function(){
+				if(this){
+					this.transaction(function (tx){
+						tx.executeSql(('INSERT INTO users (firstname, lastname, address, email, card) VALUES (?,?,?,?,?)'),
+						[fName, lName, address, email, libraryCard],
+						function(tx, result){
+							if(result){
+								console.log(result);
+								document.getElementById("fNameField").value="";
+								document.getElementById("lNameField").value="";
+								document.getElementById("addressField").value="";
+								document.getElementById("emailField").value="";
+								document.getElementById("cardField").value="";
+								document.getElementById("newUserStatus").innerHTML="<b>Saved</b>";
+							}
+						},
+						function(err){
+							console.log("Database error: "+err);
+						});
+					});
+				}
+			});
+		}else{
+			console.log("Some fields are missing");
+			document.getElementById("newUserStatus").innerHTML="<b>Some fields are missing</b>";
+		}
 	}
 }
-function newBook(){
-	var name=document.getElementById("nameField").value;
-	var author=document.getElementById("authorField").value;
-	var genre=document.getElementById("genreField").value;
-	var isbn=document.getElementById("isbnField").value;
-	if(name&&author&&genre&&isbn){
-		console.log(name+" "+author+", "+genre+", "+isbn);
-		connect(function(){
-			if(this){
-				this.transaction(function (tx){
-					tx.executeSql(('INSERT INTO books (name, author, genre, isbn) VALUES (?,?,?,?)'),
-					[name, author, genre, isbn],
-					function(tx, result){
-						if(result){
-							console.log(result);
-							document.getElementById("nameField").value="";
-							document.getElementById("authorField").value="";
-							document.getElementById("genreField").value="";
-							document.getElementById("isbnField").value="";
-							document.getElementById("newBookStatus").innerHTML="<b>Saved</b>";
-						}
-					},
-					function(err){
-						console.log("Database error: "+err);
-					});
+function newBook(test){
+	if(test=='test'){
+		var t0,t1;
+		//http://stackoverflow.com/a/27176742
+		var request=new XMLHttpRequest();
+		request.open('GET', 'json/books.json', true);
+		request.onload=function(){
+			if(request.status>=200&&request.status<400){
+				var jsonFile=JSON.parse(request.responseText);
+				//console.dir(jsonFile);
+				connect(function(){
+					if(this){
+						t0=performance.now();
+						this.transaction(function (tx){
+							for(var i=0;i<jsonFile.books.length;i++){//http://stackoverflow.com/a/13739835
+								tx.executeSql(('INSERT INTO books (name, author, genre, isbn) VALUES (?,?,?,?)'),
+								[jsonFile.books[i].name, jsonFile.books[i].author, jsonFile.books[i].genre, jsonFile.books[i].isbn],
+								function(tx, result){
+									if(result){
+										//How to only take the last round?
+										if(i==jsonFile.books.length){
+											t1=performance.now();
+											console.log(t1-t0);
+											document.getElementById("bookCreateTestStatus").innerHTML="Saved multiple books. Time: "+(t1-t0)+" ms.";
+										}
+									}
+								},
+								function(err){
+									console.log("Database error: "+err);
+								});
+							}
+						});
+					}
 				});
+			}else{
+				// We reached our target server, but it returned an error
 			}
-		});
+		};
+		request.onerror = function() {
+			// There was a connection error of some sort
+		};
+		request.send();
 	}else{
-		console.log("Some fields are missing");
-		document.getElementById("newBookStatus").innerHTML="<b>Some fields are missing</b>";
+		var name=document.getElementById("nameField").value;
+		var author=document.getElementById("authorField").value;
+		var genre=document.getElementById("genreField").value;
+		var isbn=document.getElementById("isbnField").value;
+		if(name&&author&&genre&&isbn){
+			console.log(name+" "+author+", "+genre+", "+isbn);
+			connect(function(){
+				if(this){
+					this.transaction(function (tx){
+						tx.executeSql(('INSERT INTO books (name, author, genre, isbn) VALUES (?,?,?,?)'),
+						[name, author, genre, isbn],
+						function(tx, result){
+							if(result){
+								console.log(result);
+								document.getElementById("nameField").value="";
+								document.getElementById("authorField").value="";
+								document.getElementById("genreField").value="";
+								document.getElementById("isbnField").value="";
+								document.getElementById("newBookStatus").innerHTML="<b>Saved</b>";
+							}
+						},
+						function(err){
+							console.log("Database error: "+err);
+						});
+					});
+				}
+			});
+		}else{
+			console.log("Some fields are missing");
+			document.getElementById("newBookStatus").innerHTML="<b>Some fields are missing</b>";
+		}
 	}
 }
-function getUserList(){
+function getUserList(test){
 	connect(function(){
 		if(this){
+			var t0=performance.now();
 			var results="";
 			this.transaction(function (tx){
 				tx.executeSql('SELECT userid, firstname, lastname from users', [],
 				function(tx, result){
 					if(result){
+						var t1=performance.now();
 						console.log(result);
 						for(var i=0;i<result.rows.length;i++){
 							results+=(i+1)+". <a href='user.html?key="+result.rows.item(i).userid+"'>"+result.rows.item(i).firstname+" "+result.rows.item(i).lastname+"</a><br />";
 						}
 						console.log("User list done!");
-						document.getElementById("userList").innerHTML=results;
+						console.log(t1-t0);
+						if(test=='test'){
+							document.getElementById("userReadTestStatus").innerHTML="User list loaded in: "+(t1-t0)+" ms.";
+						}else{
+							document.getElementById("userList").innerHTML=results;
+						}
 					}
 				},
 				function(err){
@@ -103,20 +197,27 @@ function getUserList(){
 		}
 	});
 }
-function getBookList(){
+function getBookList(test){
 	connect(function(){
 		if(this){
+			var t0=performance.now();
 			var results="";
 			this.transaction(function (tx){
 				tx.executeSql('SELECT bookid, name from books', [],
 				function(tx, result){
 					if(result){
+						var t1=performance.now();
 						console.log(result);
 						for(var i=0;i<result.rows.length;i++){
 							results+=(i+1)+". <a href='book.html?key="+result.rows.item(i).bookid+"'>"+result.rows.item(i).name+"</a><br />";
 						}
 						console.log("Book list done!");
-						document.getElementById("bookList").innerHTML=results;
+						console.log(t1-t0);
+						if(test=='test'){
+							document.getElementById("bookReadTestStatus").innerHTML="Book list loaded in: "+(t1-t0)+" ms.";
+						}else{
+							document.getElementById("bookList").innerHTML=results;
+						}
 					}
 				},
 				function(err){
@@ -270,11 +371,15 @@ function getUserById(){
 			if(this){
 				this.transaction(function (tx){
 					//tx.executeSql('SELECT DISTINCT firstname, lastname, address, email, card, bookid, name FROM users JOIN userBooks ON users.userid=userBooks.user JOIN books ON userBooks.book=books.bookid WHERE users.userid=?', [id], //if no books borrowed, will not load profile.
-					tx.executeSql('SELECT DISTINCT firstname, lastname, address, email, card FROM users WHERE userid=?', [id],
+					tx.executeSql('SELECT DISTINCT firstname, lastname, address, email, card, updated FROM users WHERE userid=?', [id],
 					function(tx, result){
 						if(result){
 							console.log(result);
-							var returnValue="Firstname: <input type='text' id='editFname' value='"+result.rows.item(0).firstname+"' /><br/>Lastname: <input type='text' id='editLname' value='"+result.rows.item(0).lastname+"' /><br />Address: <input type='text' id='editAddress' value='"+result.rows.item(0).address+"' /><br />Email: <input type='text' id='editEmail' value='"+result.rows.item(0).email+"' /><br />Card ID: <input type='text' id='cardId' value='"+result.rows.item(0).card+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyUserById("+id+")' /><input type='button' value='Delete' onclick='removeUserById("+id+")' /><br /><br /><div id='userEditStatus'></div>";
+							if(result.rows.item(0).updated===1){
+								var returnValue="Firstname: <input type='text' id='editFname' value='"+result.rows.item(0).firstname+"' /><br/>Lastname: <input type='text' id='editLname' value='"+result.rows.item(0).lastname+"' /><br />Address: <input type='text' id='editAddress' value='"+result.rows.item(0).address+"' /><br />Email: <input type='text' id='editEmail' value='"+result.rows.item(0).email+"' /><br />Card ID: <input type='text' id='cardId' value='"+result.rows.item(0).card+"' disabled /><br />Test updated: "+result.rows.item(0).updated+"<br /><br /><input type='button' value='Edit' onclick='modifyUserById("+id+")' /><input type='button' value='Delete' onclick='removeUserById("+id+")' /><br /><br /><div id='userEditStatus'></div>";
+							}else{
+								var returnValue="Firstname: <input type='text' id='editFname' value='"+result.rows.item(0).firstname+"' /><br/>Lastname: <input type='text' id='editLname' value='"+result.rows.item(0).lastname+"' /><br />Address: <input type='text' id='editAddress' value='"+result.rows.item(0).address+"' /><br />Email: <input type='text' id='editEmail' value='"+result.rows.item(0).email+"' /><br />Card ID: <input type='text' id='cardId' value='"+result.rows.item(0).card+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyUserById("+id+")' /><input type='button' value='Delete' onclick='removeUserById("+id+")' /><br /><br /><div id='userEditStatus'></div>";
+							}
 							document.getElementById("userData").innerHTML=returnValue;
 						}else{
 							console.log("No user found");
@@ -317,11 +422,15 @@ function getBookById(){
 		connect(function(){
 			if(this){
 				this.transaction(function (tx){
-					tx.executeSql('SELECT name, author, genre, isbn FROM books WHERE bookid=?', [id],
+					tx.executeSql('SELECT name, author, genre, isbn, updated FROM books WHERE bookid=?', [id],
 					function(tx, result){
 						if(result){
 							console.log(result);
-							var returnValue="Name: <input type='text' id='editName' value='"+result.rows.item(0).name+"' /><br/>Author: <input type='text' id='editAuthor' value='"+result.rows.item(0).author+"' /><br />Genre: <input type='text' id='editGenre' value='"+result.rows.item(0).genre+"' /><br />ISBN: <input type='text' id='isbn' value='"+result.rows.item(0).isbn+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyBookById("+id+")' /><input type='button' value='Delete' onclick='removeBookById("+id+")' /><br /><br /><div id='bookEditStatus'></div>";
+							if(result.rows.item(0).updated===1){
+								var returnValue="Name: <input type='text' id='editName' value='"+result.rows.item(0).name+"' /><br/>Author: <input type='text' id='editAuthor' value='"+result.rows.item(0).author+"' /><br />Genre: <input type='text' id='editGenre' value='"+result.rows.item(0).genre+"' /><br />ISBN: <input type='text' id='isbn' value='"+result.rows.item(0).isbn+"' disabled /><br />Test updated: "+result.rows.item(0).updated+"<br /><br /><input type='button' value='Edit' onclick='modifyBookById("+id+")' /><input type='button' value='Delete' onclick='removeBookById("+id+")' /><br /><br /><div id='bookEditStatus'></div>";
+							}else{
+								var returnValue="Name: <input type='text' id='editName' value='"+result.rows.item(0).name+"' /><br/>Author: <input type='text' id='editAuthor' value='"+result.rows.item(0).author+"' /><br />Genre: <input type='text' id='editGenre' value='"+result.rows.item(0).genre+"' /><br />ISBN: <input type='text' id='isbn' value='"+result.rows.item(0).isbn+"' disabled /><br /><br /><input type='button' value='Edit' onclick='modifyBookById("+id+")' /><input type='button' value='Delete' onclick='removeBookById("+id+")' /><br /><br /><div id='bookEditStatus'></div>";
+							}
 							document.getElementById("bookData").innerHTML=returnValue;
 						}else{
 							console.log("No book found");
@@ -573,4 +682,92 @@ function returnBooks(id){
 			}
 		});
 	}
+}
+function updateUsers(){
+	var t0,t1;
+	connect(function(){
+		if(this){
+			t0=performance.now();
+			var results="";
+			this.transaction(function (tx){
+				tx.executeSql('UPDATE users SET updated=1', [],
+				function(tx, result){
+					if(result){
+						var t1=performance.now();
+						console.log(result);
+						console.log(t1-t0);
+						document.getElementById('userUpdateTestStatus').innerHTML="Users updated in "+(t1-t0)+" ms.";
+					}
+				},
+				function(err){
+					console.log("Database error: "+err);
+				});
+			});
+		}
+	});
+}
+function updateBooks(){
+	var t0,t1;
+	connect(function(){
+		if(this){
+			t0=performance.now();
+			var results="";
+			this.transaction(function (tx){
+				tx.executeSql('UPDATE books SET updated=1', [],
+				function(tx, result){
+					if(result){
+						var t1=performance.now();
+						console.log(result);
+						console.log(t1-t0);
+						document.getElementById('bookUpdateTestStatus').innerHTML="Users updated in "+(t1-t0)+" ms.";
+					}
+				},
+				function(err){
+					console.log("Database error: "+err);
+				});
+			});
+		}
+	});
+}
+function deleteUsers(){
+	connect(function(){
+		if(this){
+			var t0=performance.now();
+			this.transaction(function (tx){
+				tx.executeSql(('DELETE FROM users'),[],
+				function(tx, result){
+					if(result){
+						var t1=performance.now();
+						console.log(result);
+						console.log(t1-t0);
+						document.getElementById("userDeleteTestStatus").innerHTML="Users deleted in "+(t1-t0)+" ms.";
+					}
+				},
+				function(err){
+					console.log("Database error: "+err);
+				});
+			});
+		}
+	});
+}
+function deleteBooks(){
+	connect(function(){
+		if(this){
+			var t0=performance.now();
+			this.transaction(function (tx){
+				tx.executeSql(('DELETE FROM books'),[],
+				function(tx, result){
+					if(result){
+						var t1=performance.now();
+						console.log(result);
+						console.log(t1-t0);
+						document.getElementById("bookDeleteTestStatus").innerHTML="Users deleted in "+(t1-t0)+" ms.";
+					}
+				},
+				function(err){
+					console.log("Database error: "+err);
+				});
+			});
+		}
+	});
 }
