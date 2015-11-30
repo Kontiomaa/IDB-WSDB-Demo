@@ -21,7 +21,7 @@ function newUser(test){
 		request.onload=function(){
 			if(request.status>=200&&request.status<400){
 				var jsonFile=JSON.parse(request.responseText);
-				console.dir(jsonFile);
+				//console.dir(jsonFile);
 				connect(function(){
 					if(this){
 						t0=performance.now();
@@ -31,18 +31,23 @@ function newUser(test){
 								[jsonFile.users[i].firstname, jsonFile.users[i].lastname, jsonFile.users[i].address, jsonFile.users[i].email, jsonFile.users[i].card],
 								function(tx, result){
 									if(result){
-										//How to only take the last round?
-										if(i==jsonFile.users.length){
-											t1=performance.now();
-											console.log(t1-t0);
-											document.getElementById("userCreateTestStatus").innerHTML="Saved multiple users. Time: "+(t1-t0)+" ms.";
-										}
+										//console.dir(result);
 									}
 								},
 								function(err){
-									console.log("Database error: "+err);
+									console.log("Database error:");
+									console.dir(err);
 								});
 							}
+						},
+						function(err){
+							console.log("Database error:");
+							console.dir(err);
+						},
+						function(){
+							t1=performance.now();
+							console.log(t1-t0);
+							document.getElementById("userCreateTestStatus").innerHTML="Saved multiple users. Time: "+(t1-t0)+" ms.";
 						});
 					}
 				});
@@ -80,7 +85,8 @@ function newUser(test){
 							}
 						},
 						function(err){
-							console.log("Database error: "+err);
+							console.log("Database error:");
+							console.dir(err);
 						});
 					});
 				}
@@ -110,18 +116,23 @@ function newBook(test){
 								[jsonFile.books[i].name, jsonFile.books[i].author, jsonFile.books[i].genre, jsonFile.books[i].isbn],
 								function(tx, result){
 									if(result){
-										//How to only take the last round?
-										if(i==jsonFile.books.length){
-											t1=performance.now();
-											console.log(t1-t0);
-											document.getElementById("bookCreateTestStatus").innerHTML="Saved multiple books. Time: "+(t1-t0)+" ms.";
-										}
+										//console.dir(result);
 									}
 								},
 								function(err){
-									console.log("Database error: "+err);
+									console.log("Database error:");
+									console.dir(err);
 								});
 							}
+						},
+						function(err){
+							console.log("Database error:");
+							console.dir(err);
+						},
+						function(){
+							t1=performance.now();
+							console.log(t1-t0);
+							document.getElementById("bookCreateTestStatus").innerHTML="Saved multiple books. Time: "+(t1-t0)+" ms.";
 						});
 					}
 				});
@@ -156,7 +167,8 @@ function newBook(test){
 							}
 						},
 						function(err){
-							console.log("Database error: "+err);
+							console.log("Database error:");
+							console.dir(err);
 						});
 					});
 				}
@@ -191,7 +203,8 @@ function getUserList(test){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 			});
 		}
@@ -221,7 +234,8 @@ function getBookList(test){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+									console.dir(err);
 				});
 			});
 		}
@@ -250,7 +264,8 @@ function getUserByCardId(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -284,7 +299,8 @@ function getUserByName(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -318,7 +334,8 @@ function getBookByIsbn(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -352,7 +369,8 @@ function getBookByName(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -387,7 +405,8 @@ function getUserById(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 					tx.executeSql('SELECT DISTINCT bookid, name FROM userBooks JOIN books ON userBooks.book=books.bookid WHERE user=?', [id],
 					function(tx, result){
@@ -404,7 +423,8 @@ function getUserById(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -438,7 +458,8 @@ function getBookById(){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -464,7 +485,8 @@ function removeUserById(id){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -487,7 +509,8 @@ function removeBookById(id){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -515,7 +538,8 @@ function modifyUserById(id){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -546,7 +570,8 @@ function modifyBookById(id){
 						}
 					},
 					function(err){
-						console.log("Database error: "+err);
+						console.log("Database error:");
+						console.dir(err);
 					});
 				});
 			}
@@ -574,7 +599,8 @@ function getUsersAndBooks(){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 				tx.executeSql('SELECT bookid, name from books', [],
 				function(tx, result){
@@ -588,7 +614,8 @@ function getUsersAndBooks(){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 			});
 		}
@@ -647,7 +674,8 @@ function borrowBooks(){
 							}
 						},
 						function(err){
-							console.log("Database error: "+err);
+							console.log("Database error:");
+							console.dir(err);
 						});
 					});
 				}
@@ -675,7 +703,8 @@ function returnBooks(id){
 							location.reload();
 						},
 						function(err){
-							console.log("Database error: "+err);
+							console.log("Database error:");
+							console.dir(err);
 						});
 					}
 				});
@@ -700,7 +729,8 @@ function updateUsers(){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 			});
 		}
@@ -723,7 +753,8 @@ function updateBooks(){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 			});
 		}
@@ -744,7 +775,8 @@ function deleteUsers(){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 			});
 		}
@@ -765,7 +797,8 @@ function deleteBooks(){
 					}
 				},
 				function(err){
-					console.log("Database error: "+err);
+					console.log("Database error:");
+					console.dir(err);
 				});
 			});
 		}
