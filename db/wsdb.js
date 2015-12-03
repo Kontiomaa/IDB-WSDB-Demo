@@ -88,6 +88,13 @@ function newUser(test){
 							console.log("Database error:");
 							console.dir(err);
 						});
+					},
+					function(err){
+						console.log("Database error:");
+						console.dir(err);
+					},
+					function(){
+						console.log("Transaction finished");
 					});
 				}
 			});
@@ -170,6 +177,13 @@ function newBook(test){
 							console.log("Database error:");
 							console.dir(err);
 						});
+					},
+					function(err){
+						console.log("Database error:");
+						console.dir(err);
+					},
+					function(){
+						console.log("Transaction finished");
 					});
 				}
 			});
@@ -184,7 +198,7 @@ function getUserList(test){
 		if(this){
 			var t0=performance.now();
 			var results="";
-			this.transaction(function (tx){
+			this.readTransaction(function (tx){
 				tx.executeSql('SELECT userid, firstname, lastname from users', [],
 				function(tx, result){
 					if(result){
@@ -206,6 +220,13 @@ function getUserList(test){
 					console.log("Database error:");
 					console.dir(err);
 				});
+			},
+			function(err){
+				console.log("Database error:");
+				console.dir(err);
+			},
+			function(){
+				console.log("Transaction finished");
 			});
 		}
 	});
@@ -215,7 +236,7 @@ function getBookList(test){
 		if(this){
 			var t0=performance.now();
 			var results="";
-			this.transaction(function (tx){
+			this.readTransaction(function (tx){
 				tx.executeSql('SELECT bookid, name from books', [],
 				function(tx, result){
 					if(result){
@@ -235,8 +256,15 @@ function getBookList(test){
 				},
 				function(err){
 					console.log("Database error:");
-									console.dir(err);
+					console.dir(err);
 				});
+			},
+			function(err){
+				console.log("Database error:");
+				console.dir(err);
+			},
+			function(){
+				console.log("Transaction finished");
 			});
 		}
 	});
@@ -248,7 +276,7 @@ function getUserByCardId(){
 		console.log("Search: "+search);
 		connect(function(){
 			if(this){
-				this.transaction(function (tx){
+				this.readTransaction(function (tx){
 					tx.executeSql('SELECT firstname, lastname, address, email, card FROM users WHERE card=?', [search],
 					function(tx, result){
 						if(result){
@@ -283,7 +311,7 @@ function getUserByName(){
 		search=search.split(" ");
 		connect(function(){
 			if(this){
-				this.transaction(function (tx){
+				this.readTransaction(function (tx){
 					tx.executeSql('SELECT firstname, lastname, address, email, card from users WHERE firstname LIKE ? OR firstname LIKE ? OR lastname LIKE ? OR lastname LIKE ?', [("%"+search[0]+"%"),("%"+search[1]+"%"),("%"+search[0]+"%"),("%"+search[1]+"%")]/*Searching with "like" needs "%" to act as wildcards (on this case to both directions beginning and end). Hardcoded for now, a loop would be better to check all names, not only two*/,
 					function(tx, result){
 						if(result){
@@ -317,7 +345,7 @@ function getBookByIsbn(){
 		console.log("Search: "+search);
 		connect(function(){
 			if(this){
-				this.transaction(function (tx){
+				this.readTransaction(function (tx){
 					tx.executeSql('SELECT name, author, genre, isbn FROM books WHERE isbn=?', [search],
 					function(tx, result){
 						if(result){
@@ -352,7 +380,7 @@ function getBookByName(){
 		console.log("Search: "+search);
 		connect(function(){
 			if(this){
-				this.transaction(function (tx){
+				this.readTransaction(function (tx){
 					tx.executeSql('SELECT name, author, genre, isbn FROM books WHERE name LIKE ?', [("%"+search+"%")],
 					function(tx, result){
 						if(result){
@@ -387,7 +415,7 @@ function getUserById(){
 		console.log("id: "+id);
 		connect(function(){
 			if(this){
-				this.transaction(function (tx){
+				this.readTransaction(function (tx){
 					//tx.executeSql('SELECT DISTINCT firstname, lastname, address, email, card, bookid, name FROM users JOIN userBooks ON users.userid=userBooks.user JOIN books ON userBooks.book=books.bookid WHERE users.userid=?', [id], //if no books borrowed, will not load profile.
 					tx.executeSql('SELECT DISTINCT firstname, lastname, address, email, card, updated FROM users WHERE userid=?', [id],
 					function(tx, result){
@@ -441,7 +469,7 @@ function getBookById(){
 		console.log("id: "+id);
 		connect(function(){
 			if(this){
-				this.transaction(function (tx){
+				this.readTransaction(function (tx){
 					tx.executeSql('SELECT name, author, genre, isbn, updated FROM books WHERE bookid=?', [id],
 					function(tx, result){
 						if(result){
@@ -586,7 +614,7 @@ function getUsersAndBooks(){
 		if(this){
 			var results1="";
 			var results2="";
-			this.transaction(function (tx){
+			this.readTransaction(function (tx){
 				tx.executeSql('SELECT userid, firstname, lastname from users', [],
 				function(tx, result){
 					if(result){
