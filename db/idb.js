@@ -287,7 +287,11 @@ function getUserByCardId(){
 				range=IDBKeyRange.only(search);
 				transaction.oncomplete=function(){
 					console.log("Result: "+results);
-					document.getElementById("searchResult").innerHTML=results;
+					if(results){
+						document.getElementById("searchResult").innerHTML=results;
+					}else{
+						document.getElementById("searchResult").innerHTML="0 Hits";
+					}
 				}
 				index.openCursor(range).onsuccess=function(res) {
 					cursor=res.target.result;
@@ -300,9 +304,6 @@ function getUserByCardId(){
 						results+="</p>";
 						cursor.continue();
 					}
-				}
-				if(!results){
-					document.getElementById("searchResult").innerHTML="0 Hits";
 				}
 			}else{
 				console.log("DB didn't load");

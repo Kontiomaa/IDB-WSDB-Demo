@@ -13,30 +13,30 @@
 			<h1>Book</h1>
 		</header>
 		<main>
-			<nav>
-				<a href="index.html">Front page</a>
-				<br />
-				<a href="tests.html">Tests</a>
-				<br />
-				<div>
-					<p>Users</p>
-					<ul>
-						<li><a href="addUser.html">New</a></li>
-						<li><a href="listUsers.html">Browse</a></li>
-						<li><a href="searchUsers.html">Search</a></li>
-						<li><a href="borrowBooks.html">Borrow books</a></li>
-					</ul>
-				</div>
-				<div>
-					<p>Books</p>
-					<ul>
-						<li><a href="addBook.html">New</a></li>
-						<li><a href="listBooks.html">Browse</a></li>
-						<li><a href="searchBooks.html">Search</a></li>
-					</ul>
-				</div>
+			<nav id="wrapper">
+				<ul>
+					<li><a href="index.html">Front page</a></li>
+					<li>
+						<a href="#">Users</a>
+						<ul>
+							<li><a href="addUser.html">New</a></li>
+							<li><a href="listUsers.html">Browse</a></li>
+							<li><a href="searchUsers.html">Search</a></li>
+						</ul>
+					</li>
+					<li class="activePage">
+						<a href="#">Books</a>
+						<ul>
+							<li><a href="addBook.html">New</a></li>
+							<li><a href="listBooks.html">Browse</a></li>
+							<li><a href="searchBooks.html">Search</a></li>
+						</ul>
+					</li>
+					<li><a href="borrowBooks.html">Borrow books</a></li>
+					<li><a href="tests.html">Tests</a></li>
+				</ul>
 			</nav>
-			<br /><br />
+			<br /><br /><hr /><br />
 			<section>
 				<p id="bookData">Book data here...</p>
 			</section>

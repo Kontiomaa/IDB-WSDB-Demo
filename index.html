@@ -11,27 +11,30 @@
 			<h1>Library demo</h1>
 		</header>
 		<main>
-			<nav>
-				<a href="tests.html">Tests</a>
-				<br />
-				<div>
-					<p>Users</p>
-					<ul>
-						<li><a href="addUser.html">New</a></li>
-						<li><a href="listUsers.html">Browse</a></li>
-						<li><a href="searchUsers.html">Search</a></li>
-						<li><a href="borrowBooks.html">Borrow books</a></li>
-					</ul>
-				</div>
-				<div>
-					<p>Books</p>
-					<ul>
-						<li><a href="addBook.html">New</a></li>
-						<li><a href="listBooks.html">Browse</a></li>
-						<li><a href="searchBooks.html">Search</a></li>
-					</ul>
-				</div>
+			<nav id="wrapper">
+				<ul>
+					<li class="activePage"><a href="#">Front page</a></li>
+					<li>
+						<a href="#">Users</a>
+						<ul>
+							<li><a href="addUser.html">New</a></li>
+							<li><a href="listUsers.html">Browse</a></li>
+							<li><a href="searchUsers.html">Search</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="#">Books</a>
+						<ul>
+							<li><a href="addBook.html">New</a></li>
+							<li><a href="listBooks.html">Browse</a></li>
+							<li><a href="searchBooks.html">Search</a></li>
+						</ul>
+					</li>
+					<li><a href="borrowBooks.html">Borrow books</a></li>
+					<li><a href="tests.html">Tests</a></li>
+				</ul>
 			</nav>
+			<br /><br /><hr />
 			<section>
 				<h3>Indexed Database and Web SQL Database - Library Demo.</h3>
 				<p>You can do the following:</p>
